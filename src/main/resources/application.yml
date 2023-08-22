@@ -1,0 +1,29 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/switter_db
+    username: pq_user
+    password: pq_password
+  data:
+    web:
+      pageable:
+        max-page-size: 50
+        default-page-size: 10
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: true
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+
+security:
+  jwt:
+    token:
+      secret-key: aZW6VYW4RCHKWkRYEXw+IIdoLDgi2/kXs8O9NtnIzcs=
+      expire-length: 300000 # 5 minutes duration by default: 5 minutes * 60 seconds * 1000 miliseconds
