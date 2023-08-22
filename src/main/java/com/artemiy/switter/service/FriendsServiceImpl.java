@@ -2,13 +2,14 @@ package com.artemiy.switter.service;
 
 import com.artemiy.switter.dao.entity.UserRelationStatus;
 import com.artemiy.switter.dao.entity.UsersRelation;
-import com.artemiy.switter.dao.repository.UsersRelationRepository;
 import com.artemiy.switter.dao.repository.UserRepository;
+import com.artemiy.switter.dao.repository.UsersRelationRepository;
 import com.artemiy.switter.exception.UserNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -83,6 +84,11 @@ public class FriendsServiceImpl implements FriendsService {
 				backwardRelation.setStatus(UserRelationStatus.SUBSCRIBER);
 				usersRelationRepository.save(backwardRelation);
 			});
+	}
+
+	@Override
+	public List<UsersRelation> getRelations(String username) {
+		return usersRelationRepository.getUsersRelationByFromUser_Username(username);
 	}
 
 	private UsersRelation getFriendRequest(String fromUsername, String toUsername) {

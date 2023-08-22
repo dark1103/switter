@@ -27,7 +27,12 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public List<Post> getPostsByAuthor(String username, Pageable pageable) {
-		return postRepository.getPostByAuthorOrderByCreationDate(username, pageable);
+		return postRepository.getPostByAuthor_UsernameOrderByCreationDate(username, pageable);
+	}
+
+	@Override
+	public List<Post> getFeedForUser(String username, Pageable pageable) {
+		return postRepository.getPostsForUser(username, pageable);
 	}
 
 	@Override
@@ -45,16 +50,17 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public List<Post> getFeedForUser(String username) {
-		return postRepository.getPostsForUser(username);
+	public Post getPost(long postId) {
+		return postRepository.findById(postId)
+			.orElseThrow(() -> createPostNotFoundException(postId));
 	}
 
 	@Override
-	public Post editPost(String username, Post editedPost) {
-		Post post = postRepository.findById(editedPost.getId())
-			.orElseThrow(() -> new NoSuchElementException("Post " + editedPost.getId() + " not found"));
-		if(!Objects.equals(post.getAuthor().getUsername(), username)) {
-			throw new UnauthorizedAccessException(username + " not allowed to edit post " + editedPost.getId());
+	public Post editPost(String username, long postId, Post editedPost) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> createPostNotFoundException(postId));
+		if (!Objects.equals(post.getAuthor().getUsername(), username)) {
+			throw new UnauthorizedAccessException(username + " not allowed to edit post with id " + editedPost.getId());
 		}
 		post.setTitle(editedPost.getTitle());
 		post.setContent(editedPost.getContent());
@@ -62,10 +68,16 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public void deletePost(Long postId, String username) {
-		if(!Objects.equals(postRepository.findById(postId).orElseThrow().getAuthor().getUsername(), username)) {
+	public void deletePost(String username, long postId) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> createPostNotFoundException(postId));
+		if (!Objects.equals(post.getAuthor().getUsername(), username)) {
 			throw new UnauthorizedAccessException(username + " not allowed to delete post " + postId);
 		}
 		postRepository.deleteById(postId);
+	}
+
+	private NoSuchElementException createPostNotFoundException(long postId) {
+		return new NoSuchElementException("Post with id " + postId + " not found");
 	}
 }

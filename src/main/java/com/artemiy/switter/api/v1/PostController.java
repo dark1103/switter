@@ -1,12 +1,13 @@
 package com.artemiy.switter.api.v1;
 
 import com.artemiy.switter.dao.entity.Post;
-import com.artemiy.switter.dto.post.CreatePostDto;
 import com.artemiy.switter.dto.PageableDto;
+import com.artemiy.switter.dto.post.CreatePostDto;
 import com.artemiy.switter.dto.post.EditPostDto;
 import com.artemiy.switter.dto.post.PostDto;
 import com.artemiy.switter.service.PostService;
 import com.artemiy.switter.util.CollectionUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +23,8 @@ import java.util.List;
  * @since 21.08.2023
  */
 @RestController
-@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
+@RequestMapping("/api/v1/posts")
 public class PostController {
 
 	@Value("${spring.data.web.pageable.default-page-size}")
@@ -32,16 +33,39 @@ public class PostController {
 	private final PostService postService;
 	private final ModelMapper modelMapper;
 
+	@PostMapping("/")
+	@Operation(summary = "Создание поста")
+	public PostDto createPost(@RequestBody CreatePostDto createPostDto, Principal principal) {
+		return mapPost(postService.createPost(principal.getName(), createPostDto.getTitle(), createPostDto.getContent()));
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "Получение поста по id")
+	public PostDto getPost(@PathVariable long id) {
+		return mapPost(postService.getPost(id));
+	}
+
+	@PutMapping("/{id}")
+	@Operation(summary = "Изменение поста")
+	public PostDto editPost(@PathVariable long id, @RequestBody EditPostDto createPostDto, Principal principal) {
+		return mapPost(postService.editPost(principal.getName(), id, modelMapper.map(createPostDto, Post.class)));
+	}
+
+	@DeleteMapping("/{id}")
+	@Operation(summary = "Удалене поста")
+	public void deletePost(@PathVariable long id, Principal principal) {
+		postService.deletePost(principal.getName(), id);
+	}
+
 	@GetMapping("/feed")
-	public List<PostDto> getFeed(Principal principal) {
-		return mapList(postService.getFeedForUser(principal.getName()));
+	@Operation(summary = "Получение списка постов для пользователя (собственных и тех на кого подписан)")
+	public List<PostDto> getFeed(Principal principal, PageableDto pageableDto) {
+		return mapList(postService.getFeedForUser(principal.getName(), createDefaultPageable(pageableDto)));
 	}
 
 	@GetMapping("/by_user/{username}")
-	public List<PostDto> getUserPosts(
-		@PathVariable String username,
-		PageableDto pageableDto
-	) {
+	@Operation(summary = "Получение списка постов созданных пользователем")
+	public List<PostDto> getUserPosts(@PathVariable String username, PageableDto pageableDto) {
 		return mapList(postService.getPostsByAuthor(username, createDefaultPageable(pageableDto)));
 	}
 
@@ -49,20 +73,6 @@ public class PostController {
 		return PageRequest.of(pageableDto.getPage(), defaultPageSize, pageableDto.getDirection(), "creationDate");
 	}
 
-	@PostMapping("/create")
-	public PostDto createPost(@RequestBody CreatePostDto createPostDto, Principal principal) {
-		return mapPost(postService.createPost(principal.getName(), createPostDto.getTitle(), createPostDto.getContent()));
-	}
-
-	@PostMapping("/edit")
-	public PostDto editPost(@RequestBody EditPostDto createPostDto, Principal principal) {
-		return mapPost(postService.editPost(principal.getName(), modelMapper.map(createPostDto, Post.class)));
-	}
-
-	@PostMapping("/delete/{id}")
-	public void deletePost(@PathVariable Long id, Principal principal) {
-		postService.deletePost(id, principal.getName());
-	}
 
 	private PostDto mapPost(Post post) {
 		return modelMapper.map(post, PostDto.class);

@@ -2,11 +2,10 @@ package com.artemiy.switter.dao.repository;
 
 import com.artemiy.switter.dao.entity.UserRelationStatus;
 import com.artemiy.switter.dao.entity.UsersRelation;
-import org.hibernate.annotations.SQLSelect;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -26,4 +25,6 @@ public interface UsersRelationRepository extends CrudRepository<UsersRelation, L
 	@Query("UPDATE UsersRelation ur SET ur.status = :status " +
 		"WHERE ur.fromUser.username = :fromUser AND ur.toUser.username = :toUser")
 	void updateUsersRelationStatus(String fromUser, String toUser, UserRelationStatus status);
+
+	List<UsersRelation> getUsersRelationByFromUser_Username(String fromUser);
 }

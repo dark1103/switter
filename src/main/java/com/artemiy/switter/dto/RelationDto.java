@@ -4,9 +4,10 @@ import lombok.Data;
 
 /**
  * @author Artemiy Milaev
- * @since 21.08.2023
+ * @since 22.08.2023
  */
 @Data
-public class UserDto {
+public class RelationDto {
 	private String username;
+	private String status;
 }

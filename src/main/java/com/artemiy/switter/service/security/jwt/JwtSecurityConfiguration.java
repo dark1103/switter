@@ -1,20 +1,14 @@
-package com.artemiy.switter.config;
+package com.artemiy.switter.service.security.jwt;
 
-import com.artemiy.switter.service.security.jwt.JwtTokenFilter;
-import com.artemiy.switter.service.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 /**
  * @author Artemiy Milaev
@@ -39,6 +33,7 @@ public class JwtSecurityConfiguration {
 				"/configuration/ui",
 				"/configuration/security",
 				"/swagger-ui/**",
+				"/v3/api-docs/**",
 				"/webjars/**",
 				"/swagger-ui.html"
 			)

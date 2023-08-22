@@ -5,6 +5,7 @@ import com.artemiy.switter.dto.messaging.MessageDto;
 import com.artemiy.switter.dto.messaging.SendMessageDto;
 import com.artemiy.switter.service.MessagingService;
 import com.artemiy.switter.util.CollectionUtils;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +27,8 @@ public class MessagingController {
 	private final MessagingService messagingService;
 	private final ModelMapper modelMapper;
 
-	/**
-	 * Отправка сообщения пользователем другому пользователю
-	 */
 	@PostMapping("/send")
+	@Operation(summary = "Отправка сообщения пользователю")
 	public MessageDto sendMessage(@RequestBody SendMessageDto sendMessageDto, Principal principal) {
 		return mapMessage(
 			messagingService.sendMessage(
@@ -40,10 +39,8 @@ public class MessagingController {
 		);
 	}
 
-	/**
-	 * Получение списка всех сообщений между двумя пользователями
-	 */
 	@GetMapping("/dialog/{username}")
+	@Operation(summary = "Получение списка всех сообщений с пользователем")
 	public List<MessageDto> getDialog(@PathVariable String username, Principal principal) {
 		return CollectionUtils.transformList(
 			messagingService.getDialog(principal.getName(), username),

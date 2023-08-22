@@ -13,11 +13,15 @@ public interface PostService {
 
 	List<Post> getPostsByAuthor(String username, Pageable pageable);
 
+
+	List<Post> getFeedForUser(String username, Pageable pageable);
+
 	Post createPost(String username, String title, String content);
 
-	List<Post> getFeedForUser(String username);
+	Post getPost(long postId);
 
-	Post editPost(String username, Post map);
+	Post editPost(String username, long postId, Post map);
 
-	void deletePost(Long postId, String username);
+	void deletePost(String username, long postId);
+
 }
