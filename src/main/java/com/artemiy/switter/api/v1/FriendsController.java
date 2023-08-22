@@ -5,6 +5,7 @@ import com.artemiy.switter.dto.UserDto;
 import com.artemiy.switter.service.FriendsService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -14,6 +15,7 @@ import java.util.List;
  * @author Artemiy Milaev
  * @since 21.08.2023
  */
+@Validated
 @RestController
 @RequestMapping("/api/v1/friends")
 @RequiredArgsConstructor

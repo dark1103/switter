@@ -1,5 +1,8 @@
 package com.artemiy.switter.dto.messaging;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -10,6 +13,9 @@ import lombok.Data;
  */
 @Data
 public class SendMessageDto {
+	@NotNull(message = "Receiver is required")
 	private String receiver;
+	@NotBlank(message = "Content is required")
+	@Size(max = 500, message = "Message length must be between less then 500 characters")
 	private String content;
 }

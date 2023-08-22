@@ -2,17 +2,18 @@ package com.artemiy.switter.api.v1;
 
 import com.artemiy.switter.dao.entity.Post;
 import com.artemiy.switter.dto.PageableDto;
-import com.artemiy.switter.dto.post.CreatePostDto;
 import com.artemiy.switter.dto.post.EditPostDto;
 import com.artemiy.switter.dto.post.PostDto;
 import com.artemiy.switter.service.PostService;
 import com.artemiy.switter.util.CollectionUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -22,6 +23,7 @@ import java.util.List;
  * @author Artemiy Milaev
  * @since 21.08.2023
  */
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/posts")
@@ -35,7 +37,7 @@ public class PostController {
 
 	@PostMapping("/")
 	@Operation(summary = "Создание поста")
-	public PostDto createPost(@RequestBody CreatePostDto createPostDto, Principal principal) {
+	public PostDto createPost(@Valid @RequestBody EditPostDto createPostDto, Principal principal) {
 		return mapPost(postService.createPost(principal.getName(), createPostDto.getTitle(), createPostDto.getContent()));
 	}
 
@@ -47,7 +49,7 @@ public class PostController {
 
 	@PutMapping("/{id}")
 	@Operation(summary = "Изменение поста")
-	public PostDto editPost(@PathVariable long id, @RequestBody EditPostDto createPostDto, Principal principal) {
+	public PostDto editPost(@PathVariable long id, @Valid @RequestBody EditPostDto createPostDto, Principal principal) {
 		return mapPost(postService.editPost(principal.getName(), id, modelMapper.map(createPostDto, Post.class)));
 	}
 

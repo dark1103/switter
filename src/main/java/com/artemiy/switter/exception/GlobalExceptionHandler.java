@@ -1,11 +1,14 @@
 package com.artemiy.switter.exception;
 
+import com.artemiy.switter.exception.ValidationErrorMessage.FieldValidationError;
+import com.artemiy.switter.util.CollectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.Date;
 import java.util.NoSuchElementException;
@@ -15,7 +18,7 @@ import java.util.NoSuchElementException;
  * @since 22.08.2023
  */
 @ControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<ErrorMessage> handleNoSuchElementException(NoSuchElementException e, WebRequest request) {
@@ -35,6 +38,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(UnauthorizedAccessException.class)
 	public ResponseEntity<ErrorMessage> handleUnauthorizedAccessException(UnauthorizedAccessException e, WebRequest request) {
 		return createResponse(HttpStatus.FORBIDDEN, e, request);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<ErrorMessage> handleMethodArgumentNotValidException(MethodArgumentNotValidException e, WebRequest request) {
+		return new ResponseEntity<>(
+			new ValidationErrorMessage(
+				CollectionUtils.transformList(e.getFieldErrors(), objectError -> {
+					FieldValidationError fieldValidationError = new FieldValidationError();
+					fieldValidationError.setFieldName(objectError.getField());
+					fieldValidationError.setRejectedValue(objectError.getRejectedValue());
+					fieldValidationError.setMessage(objectError.getDefaultMessage());
+					return fieldValidationError;
+				}),
+				new Date(),
+				e.getObjectName() + " validation failed",
+				request.getDescription(false)
+			),
+			HttpStatus.BAD_REQUEST
+		);
 	}
 
 	@ExceptionHandler(Exception.class)

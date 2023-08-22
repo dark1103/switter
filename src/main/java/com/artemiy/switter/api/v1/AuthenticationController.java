@@ -6,11 +6,13 @@ import com.artemiy.switter.dto.auth.RegisterDto;
 import com.artemiy.switter.service.security.UserRegistrationService;
 import com.artemiy.switter.service.security.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Artemiy Milaev
  * @since 21.08.2023
  */
+@Validated
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -32,7 +35,7 @@ public class AuthenticationController {
 
 	@PostMapping("/register")
 	@Operation(summary = "Регистрация пользователя")
-	public UserDto register(@RequestBody RegisterDto registerDto) {
+	public UserDto register(@Valid @RequestBody RegisterDto registerDto) {
 		return modelMapper.map(
 			userRegistrationService.register(
 				registerDto.getEmail(),
@@ -45,7 +48,7 @@ public class AuthenticationController {
 
 	@PostMapping("/login")
 	@Operation(summary = "Вход")
-	public String login(@RequestBody LoginDto loginDto) {
+	public String login(@Valid @RequestBody LoginDto loginDto) {
 		Authentication authentication = authenticationManager.authenticate(
 			new UsernamePasswordAuthenticationToken(
 				loginDto.getUsername(),

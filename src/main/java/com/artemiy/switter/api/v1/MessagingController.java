@@ -6,8 +6,10 @@ import com.artemiy.switter.dto.messaging.SendMessageDto;
 import com.artemiy.switter.service.MessagingService;
 import com.artemiy.switter.util.CollectionUtils;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -19,6 +21,7 @@ import java.util.List;
  * @author Artemiy Milaev
  * @since 22.08.2023
  */
+@Validated
 @RestController
 @RequestMapping("/api/v1/messaging")
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class MessagingController {
 
 	@PostMapping("/send")
 	@Operation(summary = "Отправка сообщения пользователю")
-	public MessageDto sendMessage(@RequestBody SendMessageDto sendMessageDto, Principal principal) {
+	public MessageDto sendMessage(@Valid @RequestBody SendMessageDto sendMessageDto, Principal principal) {
 		return mapMessage(
 			messagingService.sendMessage(
 				principal.getName(),
