@@ -60,7 +60,7 @@ public class PostController {
 	}
 
 	@GetMapping("/feed")
-	@Operation(summary = "Получение списка постов для пользователя (собственных и тех на кого подписан)")
+	@Operation(summary = "Получение списка постов для пользователя (тех на кого подписан)")
 	public List<PostDto> getFeed(Principal principal, PageableDto pageableDto) {
 		return mapList(postService.getFeedForUser(principal.getName(), createDefaultPageable(pageableDto)));
 	}
